@@ -137,10 +137,15 @@ public class Main {
 
         List<Integer> getElements(int address) {
             List<Integer> elements = new ArrayList<>();
-
             int current = address;
 
             while (current != NIL) {
+                if (current < 0 || current >= memory.size()) {
+                    throw new IllegalArgumentException(
+                            "Некорректный адрес CONS-ячейки"
+                    );
+                }
+
                 Cell cell = memory.get(current);
 
                 if (cell.isAtom()) {
@@ -159,6 +164,12 @@ public class Main {
         String restore(int address) {
             if (address == NIL) {
                 return "()";
+            }
+
+            if (address < 0 || address >= memory.size()) {
+                throw new IllegalArgumentException(
+                        "Некорректный адрес узла дерева"
+                );
             }
 
             Cell cell = memory.get(address);
@@ -282,6 +293,11 @@ public class Main {
         void printMemory() {
             System.out.println("\nЯчейки памяти:");
 
+            if (memory.isEmpty()) {
+                System.out.println("Память пуста");
+                return;
+            }
+
             for (int i = 0; i < memory.size(); i++) {
                 Cell cell = memory.get(i);
 
@@ -305,13 +321,25 @@ public class Main {
                 return null;
             }
 
+            if (address < 0 || address >= memory.size()) {
+                return null;
+            }
+
             Cell cell = memory.get(address);
             return cell.isAtom() ? cell.atom : null;
         }
 
         void printEnvironments(int root) {
             System.out.println("\nОкружения переменных:");
-            analyze(root, new ArrayList<>());
+
+            try {
+                analyze(root, new ArrayList<>());
+            } catch (IllegalArgumentException e) {
+                System.out.println(
+                        "Не удалось выполнить анализ окружений: "
+                                + e.getMessage()
+                );
+            }
         }
 
         void analyze(int address, List<List<String>> frames) {
@@ -445,7 +473,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("\nВведите выражение LispKit (0 — выход): ");
+            System.out.print(
+                    "\nВведите выражение LispKit (0 — выход): "
+            );
 
             if (!scanner.hasNextLine()) {
                 break;
@@ -454,6 +484,7 @@ public class Main {
             String input = scanner.nextLine().trim();
 
             if (input.equals("0")) {
+                System.out.println("Работа завершена.");
                 break;
             }
 
@@ -472,6 +503,7 @@ public class Main {
                 ast.printConsTree(root);
 
                 ast.printMemory();
+
                 ast.printEnvironments(root);
 
                 System.out.println("\nРезультат обхода дерева:");
