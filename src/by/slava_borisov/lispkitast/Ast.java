@@ -47,7 +47,7 @@ public class Ast {
         while (i < input.length()) {
             char ch = input.charAt(i);
 
-            if (Character.isWhitespace(ch)) { //пропуск пробелов
+            if (Character.isWhitespace(ch)) {
                 i++;
                 continue;
             }
@@ -127,22 +127,19 @@ public class Ast {
             checkAddress(current);
             Cell cell = memory.get(current);
 
-            //Проверяем, что ячейка является CONS, а не атомом
             if (cell.isAtom()) {
                 throw new IllegalArgumentException("Нарушена структура списка");
             }
 
-            //Добавляем адрес HEAD
-            result.add(cell.head);
 
-            // Переходим по TAIL к следующей ячейке списка
+            result.add(cell.head);
             current = cell.tail;
         }
 
         return result;
     }
 
-    // Преобразует AST обратно в строку
+
     String restore(int address) {
         if (address == NIL) {
             return "()";
@@ -151,15 +148,12 @@ public class Ast {
         checkAddress(address);
         Cell cell = memory.get(address);
 
-        //значение возвращаем
         if (cell.isAtom()) {
             return cell.atom;
         }
 
-        // Создаём объект для объединения элементов через пробел
         StringJoiner joiner = new StringJoiner(" ", "(", ")");
 
-        // Получаем адреса элементов списка и восстанавливаем каждый элемент
         for (int element : getElements(address)) {
             joiner.add(restore(element));
         }
@@ -183,7 +177,6 @@ public class Ast {
                     ? "ЧИСЛО"
                     : "АТОМ";
 
-            // Выводим тип, значение и адрес атома
             System.out.println(prefix + branch + type + ": "
                     + cell.atom + " [адрес " + address + "]");
             return;
