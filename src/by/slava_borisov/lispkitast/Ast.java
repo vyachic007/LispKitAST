@@ -72,25 +72,18 @@ public class Ast {
     }
 
     int parseExpression() {
-        if (tokenPosition >= tokens.size()) {
-            throw new IllegalArgumentException("Неожиданный конец выражения");
-        }
-
         String token = tokens.get(tokenPosition++);
 
         if (token.equals(")")) {
             throw new IllegalArgumentException("Лишняя закрывающая скобка");
         }
 
-        // Если токен не является открывающей скобкой, создаём атом и возвращаем его адрес
         if (!token.equals("(")) {
             return createAtom(token);
         }
 
-        // Создаём временный список адресов элементов текущего списка
         List<Integer> elements = new ArrayList<>();
 
-        // Рекурсивно разбираем элементы, пока не встретим закрывающую скобку
         while (tokenPosition < tokens.size() && !tokens.get(tokenPosition).equals(")")) {
             elements.add(parseExpression());
         }
@@ -101,15 +94,13 @@ public class Ast {
 
         tokenPosition++;
 
-        // Начинаем построение цепочки CONS с NIL — конца списка
         int list = NIL;
 
-        // Собираем список с конца к началу, связывая элементы через HEAD и TAIL
         for (int i = elements.size() - 1; i >= 0; i--) {
             list = createCons(elements.get(i), list);
         }
 
-        return list; //адрес ячейки
+        return list;
     }
 
     void checkAddress(int address) {
@@ -127,18 +118,12 @@ public class Ast {
             checkAddress(current);
             Cell cell = memory.get(current);
 
-            if (cell.isAtom()) {
-                throw new IllegalArgumentException("Нарушена структура списка");
-            }
-
-
             result.add(cell.head);
             current = cell.tail;
         }
 
         return result;
     }
-
 
     String restore(int address) {
         if (address == NIL) {
@@ -184,7 +169,6 @@ public class Ast {
 
         System.out.println(prefix + branch + "СПИСОК [адрес " + address + "]");
 
-        // Формируем отступ для дочерних элементов
         String nextPrefix = prefix + (last ? "    " : "│   ");
 
         List<Integer> elements = getElements(address);
@@ -194,7 +178,6 @@ public class Ast {
             return;
         }
 
-        // Рекурсивно выводим каждый элемент списка
         for (int i = 0; i < elements.size(); i++) {
             printLogicalTree(
                     elements.get(i),
@@ -202,7 +185,6 @@ public class Ast {
                     i == elements.size() - 1);
         }
     }
-
 
     void printConsTree(int address) {
         if (address == NIL) {
@@ -251,7 +233,6 @@ public class Ast {
             return;
         }
 
-        // Если ячейка является CONS, выводим указатель на неё
         System.out.println(prefix + branch + field + " → CONS [" + address + "]");
 
         printConsChildren(
