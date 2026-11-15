@@ -1,4 +1,6 @@
-package by.slava_borisov.lispkitast;
+package by.slava_borisov.lispkitast.console;
+
+import by.slava_borisov.lispkitast.ast.Ast;
 
 import java.util.Scanner;
 

@@ -1,4 +1,4 @@
-package by.slava_borisov.lispkitast;
+package by.slava_borisov.lispkitast.ast;
 
 class Cell {
     final String atom;
